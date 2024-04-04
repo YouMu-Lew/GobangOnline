@@ -66,8 +66,7 @@ export default class Board extends cc.Component {
 
     putPiece(x: number, y: number) {
         // 放置棋子
-        let is_ok = this.check(x, y);
-        if (!is_ok)
+        if (!this.check(x, y))
             return;
 
         this.boardStatus[x][y] = this.currentPlayer;
@@ -77,6 +76,9 @@ export default class Board extends cc.Component {
         piece.getComponent(Piece).setPic(this.currentPlayer);
         piece.setPosition(x * this.blockWidth, y * this.blockHeight);
 
+        if (this.isOver(x, y))
+            this.GG();
+
         if (this.currentPlayer == GM.pieceType.BLACK) {
             this.currentPlayer = GM.pieceType.WHITE;
         }
@@ -85,10 +87,20 @@ export default class Board extends cc.Component {
         }
     }
 
-    check(x, y) {
+    check(x: number, y: number) {
         // 查看当前位置是否可以着步
         return this.boardStatus[x][y] == GM.pieceType.NONE;
     }
 
-    // update (dt) {}
+    // 判断棋局是否结束
+    // 条件1：黑子或白子完成五子连珠获胜；
+    // 条件2：棋盘已无处落子，则平局。
+    isOver(x: number, y: number): boolean {
+        return false;
+    }
+
+    // 游戏结束，结算
+    GG() {
+
+    }
 }
