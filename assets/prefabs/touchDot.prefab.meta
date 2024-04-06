@@ -1,9 +1,13 @@
 {
-  "ver": "1.3.2",
-  "uuid": "89410008-cdd8-4b26-9def-892842a5a606",
+  "ver": "1.1.50",
   "importer": "prefab",
-  "optimizationPolicy": "AUTO",
-  "asyncLoadAssets": false,
-  "readonly": false,
-  "subMetas": {}
+  "imported": true,
+  "uuid": "89410008-cdd8-4b26-9def-892842a5a606",
+  "files": [
+    ".json"
+  ],
+  "subMetas": {},
+  "userData": {
+    "syncNodeName": "touchDot"
+  }
 }
