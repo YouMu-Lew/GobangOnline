@@ -12,7 +12,7 @@ export class MainMenu extends Component {
     }
 
     on_btn_start() {
-
+        director.loadScene('ModeMenu');
     }
 
     on_btn_setting() { }
