@@ -1,41 +1,49 @@
-import { _decorator, Asset, Component, director, Node, sys } from 'cc';
-import { HwGOBE } from '../../hw-gobe/script/hwgobe';
-import { isInited } from '../../hw-gobe/script/gobe_util';
-import config from '../../hw-gobe/script/config';
+import { _decorator, Component, loader, director, CCString, EventTarget, EditBox, Node, Button, Label, instantiate, Prefab, AssetManager, Asset, profiler, sys, error } from 'cc';
+//import { Console } from '../../prefabs/console';
+import { Console } from '../res/console';
+import { HwGobeGlobalData, global } from './hw_gobe_global_data';
+import config from './config';
+import { isInited, mockOpenId } from './gobe_util';
 // import * as GOBE from '../../cs-huawei/hwgobe/GOBE/GOBE';
-import { global } from '../../hw-gobe/script/hw_gobe_global_data';
 const { ccclass, property } = _decorator;
 
-@ccclass('ModeMenu')
-export class ModeMenu extends Component {
+
+/**
+ * 华为联机对战
+*/
+@ccclass('HwGOBE')
+export class HwGOBE extends Component {
+    @property({ type: Console })
+    console: Console;
     @property({ type: Asset })
     cerPath: Asset;
 
-    start() {
-
+    onEnable() {
+        // GOBE.Logger.level = GOBE.LogLevel.INFO;
+        profiler.hideStats();
+        console.log("this.cerPath.nativeUrl:" + this.cerPath?.nativeUrl);
+    }
+    onDisable() {
     }
 
-    update(deltaTime: number) {
 
+    //openId = A
+    public initSDKWithOpenIdA() {
+        this._initSDK("A");
     }
 
-    onBtn_solo() {
-        director.loadScene('Game');
+    //openId = B
+    public initSDKWithOpenIdB() {
+        this._initSDK("B");
     }
 
-    onBtn_PvE() { }
-
-    onBtn_PvP() {
-        // 使用华为AGC实现在线匹配功能
-        this._initSDK('youmu');
-    }
 
     /**
      * 初始化sdk
     */
     private _initSDK(openId: string) {
         if (isInited()) {
-            director.loadScene("PvPMenu");
+            director.loadScene("gobe_hall");
             return;
         }
 
@@ -49,7 +57,7 @@ export class ModeMenu extends Component {
 
         if (sys.Platform.ANDROID === sys.platform) {
             if (this.cerPath == null) {
-                console.error("请把 cs-huawei/hwgobe/GOBE/endpoint-cert.cer 文件挂载到 hwgobe 场景的 Canvas 脚本的 cerPath 上");
+                this.console.error("请把 cs-huawei/hwgobe/GOBE/endpoint-cert.cer 文件挂载到 hwgobe 场景的 Canvas 脚本的 cerPath 上");
                 return;
             }
             clientConfig = Object.assign(clientConfig, {
@@ -64,7 +72,7 @@ export class ModeMenu extends Component {
         try {
             global.client = new GOBE.Client(clientConfig);
         } catch (error) {
-            console.error(error);
+            this.console.error(error);
             return;
         }
         global.client.onInitResult((resultCode) => {
@@ -89,7 +97,7 @@ export class ModeMenu extends Component {
                                 global.client.leaveRoom().then(() => {
                                     console.log("onInitResult room.players.length <= 1 leaveRoom success");
                                 });
-                                director.loadScene("PvPMenu");
+                                director.loadScene("gobe_hall");
                                 return;
                             }
                             console.log("加入旧房间成功");
@@ -107,16 +115,16 @@ export class ModeMenu extends Component {
                             });
                         });
                 }
-                director.loadScene("PvPMenu");
+                director.loadScene("gobe_hall");
             } else {
                 console.log('init failed');
             }
         });
 
-        console.log("正在初始化");
+        this.console.log("正在初始化");
         global.client.init()
             .catch((e) => {
-                console.log("初始化失败，请重新刷新页面", e);
+                this.console.log("初始化失败，请重新刷新页面", e);
             });
         this._statistics();
     }
@@ -142,6 +150,6 @@ export class ModeMenu extends Component {
             console.log(value);
         })
     }
+
+
 }
-
-
