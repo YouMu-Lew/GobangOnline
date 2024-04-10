@@ -27,7 +27,8 @@ export class ModeMenu extends Component {
 
     onBtn_PvP() {
         // 使用华为AGC实现在线匹配功能
-        this._initSDK('youmu');
+        let id = Date.now().toString();
+        this._initSDK(id);
     }
 
     /**

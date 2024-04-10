@@ -40,7 +40,7 @@ export class PvPMenu extends Component {
             global.room = res.room;
             global.player = res.room.player;
             // TODO 场景替换
-            cc.director.loadScene("Game");
+            cc.director.loadScene("PvPGame");
         } else {
             console.log("在线匹配失败", res);
             //是否是已经在匹配中//"101106 player already in one room"

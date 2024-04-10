@@ -4,20 +4,20 @@ import { global } from './hw_gobe_global_data';
 import { FrameSyncView } from './frame_sync_view';
 import config from './config';
 // import { Console } from '../../prefabs/console';
-import { Console } from '../res/console';
+// import { Console } from '../res/console';
 import { sleep } from './gobe_util';
 
 const { ccclass, property } = _decorator;
 @ccclass('GobeFight')
 export class GobeFight extends Component {
-    @property({ type: Console })
-    console: Console = null!;
+    // @property({ type: Console })
+    // console: Console = null!;    
 
-    @property(Label)
-    gameIdLabel: Label = null;
+    // @property(Label)
+    // gameIdLabel: Label = null;
 
-    @property(Label)
-    playerIdLabel: Label = null;
+    // @property(Label)
+    // playerIdLabel: Label = null;
 
     @property(FrameSyncView)
     frameSyncView: FrameSyncView = null;
@@ -29,8 +29,8 @@ export class GobeFight extends Component {
     onEnable() {
         //回放模式
         if (global.gameSceneType == GameSceneType.FOR_RECORD) {
-            this.gameIdLabel.string = "房间ID:" + global.recordRoomInfo.roomId;
-            this.playerIdLabel.string = "玩家Id:" + global.playerId;
+            // this.gameIdLabel.string = "房间ID:" + global.recordRoomInfo.roomId;
+            // this.playerIdLabel.string = "玩家Id:" + global.playerId;
 
             this.frameSyncView.onRecordLeaveButtonClick = () => this._onQuitButtonClick();
             this.frameSyncView.setButtons(GameSceneType.FOR_RECORD);
@@ -40,8 +40,8 @@ export class GobeFight extends Component {
             console.log("是否处于帧同步：" + global.room.isSyncing);
 
             // 设置文本标签
-            this.gameIdLabel.string = "房间ID:" + global.room.roomId;
-            this.playerIdLabel.string = "玩家Id:" + global.playerId;
+            // this.gameIdLabel.string = "房间ID:" + global.room.roomId;
+            // this.playerIdLabel.string = "玩家Id:" + global.playerId;
 
             //ui按钮事件
             this.frameSyncView.onUpButtonClickEve = () => this._sendPlaneFlyFrame(Direction.up);
@@ -76,11 +76,11 @@ export class GobeFight extends Component {
 
             //判断房间人数是否不满足游戏. 是否就1个人，退出房间
             if (global.room.players.length <= 1) {
-                this.console.log('当前房间人数不满足游戏，即将离开房间');
+                console.log('当前房间人数不满足游戏，即将离开房间');
                 this.scheduleOnce(() => {
                     global.client.leaveRoom()
                         .then(() => {
-                            this.console.log("onJoin room.players.length <= 1 leaveRoom success");
+                            console.log("onJoin room.players.length <= 1 leaveRoom success");
                         });
                     director.loadScene("gobe_hall");
                 }, 2)
@@ -117,7 +117,7 @@ export class GobeFight extends Component {
     //房间信息更新监听
     //https://developer.huawei.com/consumer/cn/doc/development/AppGallery-connect-References/gameobe-room-js-0000001192950624#section591542849
     onRoomPropertiesChange(roomInfo: GOBE.RoomInfo) {
-        // this.console.log('onRoomPropertiesChange ' + JSON.stringify(roomInfo));
+        // console.log('onRoomPropertiesChange ' + JSON.stringify(roomInfo));
     }
 
 
@@ -125,7 +125,7 @@ export class GobeFight extends Component {
     //https://developer.huawei.com/consumer/cn/doc/development/AppGallery-connect-References/gameobe-room-js-0000001192950624#section059433420611
     onRequestFrameError(err: GOBE.GOBEError) {
         console.error('请求补帧失败,err', err);
-        this.console.log(global.client.room.update().then((room) => { this.console.log("room:", room) }))
+        console.log(global.client.room.update().then((room) => { console.log("room:", room) }))
         if (err.code === 10002) {
             // 补帧失败，重置帧ID后重新补帧
             let roomProp = JSON.parse(global.room.customRoomProperties);
@@ -142,7 +142,7 @@ export class GobeFight extends Component {
         //简单判断，如果帧池内太多处于追帧情况 则暂停发送命令
         if (global.isRequestFrameStatus || global.unhandleFrames.length >= 10) {
             let add = global.unhandleFrames.length >= 10 ? (" 剩余帧数：" + global.unhandleFrames.length) : "";
-            this.console.log("当前正在追帧,请稍后再操作" + add);
+            console.log("当前正在追帧,请稍后再操作" + add);
             return;
         }
         try {
@@ -177,11 +177,11 @@ export class GobeFight extends Component {
                 y,
                 direction: dir,
             });
-            // this.console.log('sendPlaneFlyFrame:' + frameData);
+            // console.log('sendPlaneFlyFrame:' + frameData);
             global.room.sendFrame(frameData);
         }
         catch (e) {
-            this.console.log('sendPlaneFlyFrame err: ', e);
+            console.log('sendPlaneFlyFrame err: ', e);
         }
     }
 
@@ -216,7 +216,7 @@ export class GobeFight extends Component {
                 }
             }).catch((e) => {
                 // 停止帧同步失败
-                this.console.log("停止帧同步失败", e);
+                console.log("停止帧同步失败", e);
             });
     }
 
@@ -233,11 +233,11 @@ export class GobeFight extends Component {
     private _onExitRoomButtonClick() {
         global.client.leaveRoom()
             .then(() => {
-                this.console.log("退出房间成功");
+                console.log("退出房间成功");
                 global.gameSceneType = GameSceneType.FOR_NULL;
                 director.loadScene("gobe_hall");
             }).catch((e) => {
-                this.console.log("退出房间失败", e);
+                console.log("退出房间失败", e);
             });
     }
 
@@ -289,7 +289,7 @@ export class GobeFight extends Component {
     }
 
     onStopFrameSync() {
-        this.console.log("SDK广播--停止帧同步");
+        console.log("SDK广播--停止帧同步");
         frameSyncPlayerList.players = [];
         this.frameSyncView.updatePlayerNode();
         // 清空帧数据
@@ -311,13 +311,13 @@ export class GobeFight extends Component {
     }
 
     onDismiss() {
-        this.console.log("SDK广播--解散被房间");
+        console.log("SDK广播--解散被房间");
         global.gameSceneType = GameSceneType.FOR_NULL;
         director.loadScene("gobe_hall");
     }
 
     onLeave(playerInfo: GOBE.PlayerInfo) {
-        this.console.log("SDK广播--有人离开房间");
+        console.log("SDK广播--有人离开房间");
         // 重新计算房间内的人员信息
         let players = [];
         frameSyncPlayerList.players.forEach(function (player) {
@@ -330,15 +330,15 @@ export class GobeFight extends Component {
 
         //如果房间只有自己了则也要离开房间
         if (players.length == 1) {
-            this.console.log("当前房间人数太少，不满足对战条件，即将离开房间");
+            console.log("当前房间人数太少，不满足对战条件，即将离开房间");
             this.scheduleOnce(() => {
                 global.gameSceneType = GameSceneType.FOR_NULL;
                 global.client.leaveRoom()
                     .then(() => {
-                        this.console.log("离开房间成功");
+                        console.log("离开房间成功");
                         director.loadScene("gobe_hall");
                     }).catch((e) => {
-                        this.console.log("离开退出房间失败", e);
+                        console.log("离开退出房间失败", e);
                         director.loadScene("gobe_hall");
                     });
             }, 2)
@@ -402,7 +402,7 @@ export class GobeFight extends Component {
                     if (item) {
                         addPlayerFromData(item.playerId, item.x, item.y, item.direction, null);
                     } else {
-                        this.console.error("roomProp.frameSyncPlayerArr.find null, addPlayer error")
+                        console.error("roomProp.frameSyncPlayerArr.find null, addPlayer error")
                     }
                 } else {
                     if (hasTeamId === p.teamId) {
@@ -434,7 +434,7 @@ export class GobeFight extends Component {
                         addPlayerFromData(item.playerId, item.x, item.y, item.direction, null);
                     }
                     else {
-                        this.console.error("roomProp.frameSyncPlayerArr.find null, addPlayer error")
+                        console.error("roomProp.frameSyncPlayerArr.find null, addPlayer error")
                     }
                 }
                 else {

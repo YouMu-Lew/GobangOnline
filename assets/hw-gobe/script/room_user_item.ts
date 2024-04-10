@@ -13,12 +13,12 @@ export class RoomUserItem extends Component {
     @property(Node)
     noUserMask: Node = null;
 
-    onEnable (): void {
+    onEnable(): void {
         this.setUserInfo(null, false);
     }
 
     //设置用户
-    setUserInfo (player: GOBE.PlayerInfo, isOwner: boolean) {
+    setUserInfo(player: GOBE.PlayerInfo, isOwner: boolean) {
         if (player == null) {
             this._setMaskState(true);
         } else {
@@ -29,7 +29,7 @@ export class RoomUserItem extends Component {
     }
 
     //设置mask
-    private _setMaskState (show: boolean) {
+    private _setMaskState(show: boolean) {
         this.noUserMask.active = show;
         if (show) {
             this.userName.string = "";
