@@ -15,12 +15,17 @@ import TouchDot from "./TouchDot";
 import { global } from '../hw-gobe/script/hw_gobe_global_data';
 import { RoomUserItem } from '../hw-gobe/script/room_user_item';
 import Board from './Board';
+import { PlayerInfo } from '../cs-huawei/hwgobe/GOBE/GOBE';
 const hLines = 19;                       // 水平线数量
 const vLines = 19;                       // 垂直线数量
 const enum pieceType { BLACK, WHITE, NONE };
 
 @ccclass('PvPBoard')
 export default class PvPBoard extends Board {
+    @property(cc.Sprite)
+    selfHeadShot: cc.Sprite = null;
+    @property(cc.Sprite)
+    otherHeadShot: cc.Sprite = null;
 
     private _myPieceType: GM.pieceType = null;
 
@@ -28,10 +33,24 @@ export default class PvPBoard extends Board {
     onLoad() {
         super.onLoad();
 
-        if (global.room.playerId == global.room.ownerId)
+        if (global.room.playerId == global.room.ownerId) {
             this._myPieceType = GM.pieceType.BLACK;
-        else
+            cc.resources.load("black/spriteFrame", cc.SpriteFrame, (err, spriteFrame) => {
+                this.selfHeadShot.spriteFrame = spriteFrame;
+            }), this;
+            cc.resources.load("white/spriteFrame", cc.SpriteFrame, (err, spriteFrame) => {
+                this.otherHeadShot.spriteFrame = spriteFrame;
+            }), this;
+        }
+        else {
             this._myPieceType = GM.pieceType.WHITE;
+            cc.resources.load("white/spriteFrame", cc.SpriteFrame, (err, spriteFrame) => {
+                this.selfHeadShot.spriteFrame = spriteFrame;
+            }), this;
+            cc.resources.load("black/spriteFrame", cc.SpriteFrame, (err, spriteFrame) => {
+                this.otherHeadShot.spriteFrame = spriteFrame;
+            }), this;
+        }
 
         global.room.onRecvFromClient((recvFromClientInfo) => {
             const sendPlayerId = recvFromClientInfo.sendPlayerId;
@@ -69,16 +88,23 @@ export default class PvPBoard extends Board {
             return;
 
         let msgContent: string = x.toString() + ',' + y.toString();
+        let playerIdList: string[] = [];
+        global.room.players.forEach((player) => {
+            playerIdList.push(player.playerId);
+        })
         // 发送消息内容
         let sendToClientInfo = {
-            type: 2,                             // 发送类型 2：发送给recvPlayerList的玩家
+            type: 0,                             // 发送类型 2：发送给recvPlayerList的玩家
             msg: msgContent,                       // 具体的自定义消息内容
-            recvPlayerList: global.room.players, // 接收消息的玩家ID集合
+            recvPlayerList: playerIdList, // 接收消息的玩家ID集合
         }
+        console.log(playerIdList);
+        console.log(global.room);
         global.room.sendToClient(sendToClientInfo);
         global.room.onSendToClientFailed((error) => {
             // 发送消息异常，做相关的游戏逻辑处理
             console.log("发送消息失败");
+            console.log(error);
         });
     }
 }

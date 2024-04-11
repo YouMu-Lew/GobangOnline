@@ -36,6 +36,8 @@ export class GobeFightReady extends Component {
     // @property(Button)
     // delRoomBtn: Button;
 
+    @property(Node)
+    blockNode: Node = null;
 
 
     onEnable() {
@@ -152,6 +154,12 @@ export class GobeFightReady extends Component {
         } else {
             console.log("请勿重复点击");
         }
+    }
+
+    // 不开启帧同步
+    myStartGame() {
+        this.blockNode.active = false;
+        this.startGameBtn.node.active = false;
     }
 
 
